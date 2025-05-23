@@ -63,3 +63,10 @@ examples/*.txt
 examples/nips2022-peiyou/
 examples/nips2022-ednet/
 examples/models/
+
+clustering/data_subsets/ProblemBodies_23.csv
+
+clustering/data_subsets/assist2009/*
+clustering/data_subsets/assist2012/*
+clustering/data_subsets/assist2015/*
+clustering/data_subsets/assist2017/*

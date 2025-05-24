@@ -1,10 +1,11 @@
 import torch
 from openai import OpenAI
-import json
 import pandas as pd
 from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 import os
+import umap
 
 datasets = ['assist2009', 'assist2012', 'assist2015', 'assist2017']
 dataset_paths = ['assist2009/skill_builder_data_corrected_collapsed.csv', 
@@ -12,7 +13,9 @@ dataset_paths = ['assist2009/skill_builder_data_corrected_collapsed.csv',
  'assist2015/2015_100_skill_builders_main_problems.csv', 
  'assist2017/anonymized_full_release_competition_dataset.csv']
 dimensions = [2, 3, 4, 5, 6]
-for dataset, dataset_path, n_components in zip(datasets, dataset_paths,dimensions):
+dim_methods = ['tsne', 'umap', 'pca']
+for dataset, dataset_path, n_component, dim_method in zip(datasets, dataset_paths,dimensions,dim_methods):
+    print(f"Processing dataset: {dataset} with {dim_method} and {n_component} components")
     emb_filenames = torch.load('embeddings/' + dataset + 'filenames.pt')
     pb_subset_df = pd.read_csv('data_subsets/' + dataset + '/questions.csv')
 
@@ -32,29 +35,37 @@ for dataset, dataset_path, n_components in zip(datasets, dataset_paths,dimension
       # Convert tensor to numpy for scikit-learn
       skills_numpy = skills_tensor.numpy()
 
-      # Perform t-SNE for dimensionality reduction
-      tsne = TSNE(n_components=n_components, random_state=42) # You can adjust n_components if needed
-      skills_tsne = tsne.fit_transform(skills_numpy)
+    # Perform dimensionality reduction based on dim_method
+    if dim_method == 'tsne':
+        reducer = TSNE(n_components=n_component, random_state=42)
+    elif dim_method == 'umap':
+        reducer = umap.UMAP(n_components=n_component, random_state=42)
+    elif dim_method == 'pca':
+        reducer = PCA(n_components=n_component, random_state=42)
+    else:
+        raise ValueError(f"Unknown dimensionality reduction method: {dim_method}")
+
+    skills_tsne = reducer.fit_transform(skills_numpy)
 
       # Perform k-means clustering for different values of n
-      for n_clusters in range(38, 169, 10):
-          print(f"Clustering {filename_base} with {n_clusters} clusters...")
-          kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10) # Added n_init for newer sklearn versions
-          clusters = kmeans.fit_predict(skills_numpy)
+    for n_clusters in range(38, 169, 10):
+        print(f"Clustering {filename_base} with {n_clusters} clusters...")
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10) # Added n_init for newer sklearn versions
+        clusters = kmeans.fit_predict(skills_numpy)
 
-          # Save the clustering results
-          cluster_output_path = os.path.join(cluster_folder, f'clusters_n{n_clusters}.pt')
-          torch.save(torch.tensor(clusters), cluster_output_path)
-          print(f"Saved clusters to {cluster_output_path}")
-          csv_filename = os.path.basename(dataset_path)
-          assist_df_pb_subset = pd.read_csv('data_subsets/' + dataset + '/' + csv_filename, encoding = "ISO-8859-1")
-          pb_subset_df['meta-kc'] = clusters
-          assist_df_pb_subset = assist_df_pb_subset.merge(pb_subset_df[['problem_id', 'meta-kc']], on='problem_id', how='left')
-          assist_df_pb_subset['skill_id'] = assist_df_pb_subset['meta-kc']
-          assist_df_pb_subset = assist_df_pb_subset.drop(columns=['meta-kc'])
-          assist_df_pb_subset.to_csv(os.path.join(cluster_folder, csv_filename + '_dims_' + n_components + '_n' + n_clusters + '.csv'), index=False)
+        # Save the clustering results
+        cluster_output_path = os.path.join(cluster_folder, f'clusters_n{n_clusters}.pt')
+        torch.save(torch.tensor(clusters), cluster_output_path)
+        print(f"Saved clusters to {cluster_output_path}")
+        csv_filename = os.path.basename(dataset_path)
+        assist_df_pb_subset = pd.read_csv('data_subsets/' + dataset + '/' + csv_filename, encoding = "ISO-8859-1")
+        pb_subset_df['meta-kc'] = clusters
+        assist_df_pb_subset = assist_df_pb_subset.merge(pb_subset_df[['problem_id', 'meta-kc']], on='problem_id', how='left')
+        assist_df_pb_subset['skill_id'] = assist_df_pb_subset['meta-kc']
+        assist_df_pb_subset = assist_df_pb_subset.drop(columns=['meta-kc'])
+        assist_df_pb_subset.to_csv(os.path.join(cluster_folder, csv_filename + '_dims_' + n_components + '_n' + n_clusters + '.csv'), index=False)
 
-      # Optional: Save the t-SNE results as well
-      tsne_output_path = os.path.join(cluster_folder, 'tsne_results.pt')
-      torch.save(torch.tensor(skills_tsne), tsne_output_path)
-      print(f"Saved t-SNE results to {tsne_output_path}")
+    # Optional: Save the t-SNE results as well
+    tsne_output_path = os.path.join(cluster_folder, 'tsne_results.pt')
+    torch.save(torch.tensor(skills_tsne), tsne_output_path)
+    print(f"Saved t-SNE results to {tsne_output_path}")

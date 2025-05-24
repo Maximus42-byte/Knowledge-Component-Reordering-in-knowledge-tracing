@@ -70,3 +70,16 @@ clustering/data_subsets/assist2009/*
 clustering/data_subsets/assist2012/*
 clustering/data_subsets/assist2015/*
 clustering/data_subsets/assist2017/*
+
+
+clustering/clusters/assist2009/*
+clustering/clusters/assist2012/*
+clustering/clusters/assist2015/*
+clustering/clusters/assist2017/*
+
+
+clustering/embeddings/assist2009/*
+clustering/embeddings/assist2012/*
+clustering/embeddings/assist2015/*
+clustering/embeddings/assist2017/*
+

@@ -56,6 +56,7 @@ for dataset, dataset_path in zip(datasets, dataset_paths):
     # subset_df_html_selected goes to openai and clustering ....
 
     assist_subset = assist_df[assist_df['problem_id'].isin(problem_ids_int)]
-    assist_subset['problem_body'] = assist_subset['problem_body'].apply(remove_tags)
-    assist_subset.to_csv('../data_subsets/' + dataset + dataset_path.split('/', 1)[1] , index=False)
-    
+    assist_subset.to_csv('data_subsets/' + dataset_path , index=False)
+    subset_df_html_selected['problem_body'] = subset_df_html_selected['problem_body'].apply(remove_tags)
+    subset_df_questions = subset_df_html_selected[['problem_id','problem_body']]
+    subset_df_questions.to_csv('data_subsets/' + dataset + '/questions.csv' , index=False)

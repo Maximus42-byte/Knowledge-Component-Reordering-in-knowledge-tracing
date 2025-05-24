@@ -1,3 +1,22 @@
+# Instructions for running embedding clustering 
+
+1. **Create the API Configuration File**
+
+   In the root directory of the project, create a file named `emb_cluster_config.json` with the following content:
+
+   ```json
+   {
+       "OPENAI_API_KEY": "key"
+   }
+
+
+2. **add ProblemBodies_23.csv to the follwoing path**
+  ```
+    /clustering/data_subsets/
+
+
+
+
 # pyKT
 
 [![Downloads](https://pepy.tech/badge/pykt-toolkit)](https://pepy.tech/project/pykt-toolkit)

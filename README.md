@@ -16,12 +16,12 @@
     /clustering/data_subsets/
     ```
 
-3. **Create a raw_data folder inside /examples and place raw datasets in these locations**
+3. **Create a raw_data folder inside /clustering and place raw datasets in these locations**
 
     ```bash
-      /examples/raw_data/assist2009/assist2009/skill_builder_data_corrected_collapsed.csv 
-      /examples/raw_data/assist2012/assist2012/2012-2013-data-with-predictions-4-final.csv
-      /examples/raw_data/assist2017/assist2017/anonymized_full_release_competition_dataset.csv
+      /clustering/raw_data/assist2009/assist2009/skill_builder_data_corrected_collapsed.csv 
+      /clustering/raw_data/assist2012/assist2012/2012-2013-data-with-predictions-4-final.csv
+      /clustering/raw_data/assist2017/assist2017/anonymized_full_release_competition_dataset.csv
     ```
 
 

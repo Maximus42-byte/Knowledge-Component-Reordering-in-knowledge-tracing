@@ -17,7 +17,7 @@ dimensions = [2, 3, 4, 5, 6]
 dim_methods = ['tsne']
 
 
-for dataset, dataset_path, n_component, dim_method in product(datasets, dataset_paths, dimensions, dim_methods):
+for (dataset, dataset_path), n_component, dim_method in product(zip(datasets, dataset_paths), dimensions, dim_methods):
     problem_id_column_name = 'problem_id'
     if dataset == 'assist2017':
         problem_id_column_name = 'problemId'
@@ -26,9 +26,7 @@ for dataset, dataset_path, n_component, dim_method in product(datasets, dataset_
     emb_filenames = torch.load('embeddings/' + dataset + '/filenames.pt')
     pb_subset_df = pd.read_csv('data_subsets/' + dataset + '/questions.csv')
 
-
     for emb_filename in emb_filenames:
-      
         # Extract filename without path and extension
         filename = os.path.basename(emb_filename)
         filename_base = os.path.splitext(filename)[0]
@@ -54,7 +52,7 @@ for dataset, dataset_path, n_component, dim_method in product(datasets, dataset_
 
         skills_tsne = reducer.fit_transform(skills_numpy)
 
-      # Perform k-means clustering for different values of n
+        # Perform k-means clustering for different values of n
         for n_clusters in range(38, 169, 10):
             print(f"Clustering {filename_base} with {n_clusters} clusters...")
             kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10) # Added n_init for newer sklearn versions

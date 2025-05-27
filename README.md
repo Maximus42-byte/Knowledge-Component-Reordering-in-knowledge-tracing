@@ -8,18 +8,21 @@
    {
        "OPENAI_API_KEY": "[YOUR_KEY]"
    }
-  
+  ```
+
 
 2. **add ProblemBodies_23.csv to the follwoing path**
   ```bash
   /clustering/data_subsets/
 
+  ```
 
 1. **Create a raw_data folder inside /examples and place raw datasets in these locations **
     ```bash
     /examples/raw_data/assist2009/assist2009/skill_builder_data_corrected_collapsed.csv 
     /examples/raw_data/assist2009/assist2012/2012-2013-data-with-predictions-4-final.csv
     /examples/raw_data/assist2009/assist2017/anonymized_full_release_competition_dataset.csv
+  ```
 
 
 
@@ -28,6 +31,7 @@
   python preprocess.py
   python generate_embeddings.py
   python generate_clustered_datasets.py
+  ```
 
 
 

@@ -58,7 +58,7 @@ for dataset, dataset_path, n_component, dim_method in product(datasets, dataset_
         for n_clusters in range(38, 169, 10):
             print(f"Clustering {filename_base} with {n_clusters} clusters...")
             kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10) # Added n_init for newer sklearn versions
-            clusters = kmeans.fit_predict(skills_numpy)
+            clusters = kmeans.fit_predict(skills_tsne)
 
             # Save the clustering results
             cluster_output_path = os.path.join(cluster_folder, f'clusters_n{n_clusters}.pt')
@@ -66,8 +66,6 @@ for dataset, dataset_path, n_component, dim_method in product(datasets, dataset_
             print(f"Saved clusters to {cluster_output_path}")
             csv_filename = os.path.basename(dataset_path)
             assist_df_pb_subset = pd.read_csv('data_subsets/' + dataset + '/' + csv_filename, encoding = "ISO-8859-1")
-            print(pb_subset_df)
-            print(len(clusters))
             pb_subset_df['meta-kc'] = clusters
             assist_df_pb_subset = assist_df_pb_subset.merge(pb_subset_df[[problem_id_column_name, 'meta-kc']], on=problem_id_column_name, how='left')
             assist_df_pb_subset['skill_id'] = assist_df_pb_subset['meta-kc']

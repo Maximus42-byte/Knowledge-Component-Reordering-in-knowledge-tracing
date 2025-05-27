@@ -14,7 +14,7 @@ dataset_paths = ['assist2009/skill_builder_data_corrected_collapsed.csv',
 datasets = ['assist2009', 'assist2012', 'assist2017']
 dimensions = [2, 3, 4, 5, 6]
 # dim_methods = ['tsne', 'umap', 'pca']
-dim_methods = ['tsne']
+dim_methods = ['tsne', 'pca']
 
 
 for (dataset, dataset_path), n_component, dim_method in product(zip(datasets, dataset_paths), dimensions, dim_methods):
@@ -47,6 +47,7 @@ for (dataset, dataset_path), n_component, dim_method in product(zip(datasets, da
             reducer = umap.UMAP(n_components=n_component, random_state=42)
         elif dim_method == 'pca':
             reducer = PCA(n_components=n_component, random_state=42)
+
         else:
             raise ValueError(f"Unknown dimensionality reduction method: {dim_method}")
 
@@ -54,6 +55,17 @@ for (dataset, dataset_path), n_component, dim_method in product(zip(datasets, da
 
         # Perform k-means clustering for different values of n
         for n_clusters in range(38, 169, 10):
+            #################################    Mahdi added these parts   ###################
+            cluster_output_path = os.path.join(cluster_folder, f"clusters_n{n_clusters}.pt")
+            csv_output_path = os.path.join(cluster_folder, f"{dim_method}_{n_component}_n{n_clusters}.csv")
+
+            if os.path.exists(cluster_output_path) and os.path.exists(csv_output_path):
+                print(f"✓ {dataset}/{filename_base} – {n_clusters} clusters already done, skipping")
+                continue
+            
+            ####################################################################################
+
+
             print(f"Clustering {filename_base} with {n_clusters} clusters...")
             kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10) # Added n_init for newer sklearn versions
             clusters = kmeans.fit_predict(skills_tsne)

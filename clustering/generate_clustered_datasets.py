@@ -15,9 +15,10 @@ datasets = ['assist2009', 'assist2012', 'assist2017']
 dimensions = [2, 3, 4, 5, 6]
 # dim_methods = ['tsne', 'umap', 'pca']
 dim_methods = ['tsne', 'pca']
+n_cluster_ranges = [range(38, 169, 10),range(92, 203, 10),range(28, 159, 10)]
 
 
-for (dataset, dataset_path), n_component, dim_method in product(zip(datasets, dataset_paths), dimensions, dim_methods):
+for (dataset, dataset_path, n_cluster_range), n_component, dim_method in product(zip(datasets, dataset_paths, n_cluster_ranges), dimensions, dim_methods):
     problem_id_column_name = 'problem_id'
     if dataset == 'assist2017':
         problem_id_column_name = 'problemId'
@@ -54,7 +55,7 @@ for (dataset, dataset_path), n_component, dim_method in product(zip(datasets, da
         skills_tsne = reducer.fit_transform(skills_numpy)
 
         # Perform k-means clustering for different values of n
-        for n_clusters in range(38, 169, 10):
+        for n_clusters in n_cluster_range:
             #################################    Mahdi added these parts   ###################
             cluster_output_path = os.path.join(cluster_folder, f"clusters_n{n_clusters}.pt")
             csv_output_path = os.path.join(cluster_folder, f"{dim_method}_{n_component}_n{n_clusters}.csv")

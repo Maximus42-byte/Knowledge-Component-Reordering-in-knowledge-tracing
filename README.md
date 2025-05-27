@@ -7,7 +7,8 @@
    ```json
    {
        "OPENAI_API_KEY": "[YOUR_KEY]"
-   }```
+   }
+   ```
 
 
 2. **add ProblemBodies_23.csv to the follwoing path**

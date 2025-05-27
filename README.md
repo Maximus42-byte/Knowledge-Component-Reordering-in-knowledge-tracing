@@ -20,8 +20,8 @@
 
     ```bash
       /examples/raw_data/assist2009/assist2009/skill_builder_data_corrected_collapsed.csv 
-      /examples/raw_data/assist2009/assist2012/2012-2013-data-with-predictions-4-final.csv
-      /examples/raw_data/assist2009/assist2017/anonymized_full_release_competition_dataset.csv
+      /examples/raw_data/assist2012/assist2012/2012-2013-data-with-predictions-4-final.csv
+      /examples/raw_data/assist2017/assist2017/anonymized_full_release_competition_dataset.csv
     ```
 
 

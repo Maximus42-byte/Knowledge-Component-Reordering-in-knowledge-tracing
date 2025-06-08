@@ -12,9 +12,13 @@ dataset_paths = ['assist2009/skill_builder_data_corrected_collapsed.csv',
  'assist2012/2012-2013-data-with-predictions-4-final.csv', 
  'assist2017/anonymized_full_release_competition_dataset.csv']
 datasets = ['assist2009', 'assist2012', 'assist2017']
-dimensions = [2, 3, 4, 5, 6]
+#dataset_paths = [ 
+# 'assist2012/2012-2013-data-with-predictions-4-final.csv', 
+# 'assist2017/anonymized_full_release_competition_dataset.csv']
+#datasets = ['assist2012', 'assist2017']
+dimensions = [4, 5,6]
 # dim_methods = ['tsne', 'umap', 'pca']
-dim_methods = ['tsne', 'pca']
+dim_methods = [ 'pca']
 n_cluster_ranges = [range(38, 169, 10),range(92, 203, 10),range(28, 159, 10)]
 
 
@@ -26,7 +30,7 @@ for (dataset, dataset_path, n_cluster_range), n_component, dim_method in product
     print(f"Processing dataset: {dataset} with {dim_method} and {n_component} components")
     emb_filenames = torch.load('embeddings/' + dataset + '/filenames.pt')
     pb_subset_df = pd.read_csv('data_subsets/' + dataset + '/questions.csv')
-
+    pb_subset_df = pb_subset_df.dropna()
     for emb_filename in emb_filenames:
         # Extract filename without path and extension
         filename = os.path.basename(emb_filename)

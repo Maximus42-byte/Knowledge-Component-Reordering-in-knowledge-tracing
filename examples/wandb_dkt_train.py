@@ -1,6 +1,23 @@
 import argparse
 from wandb_train import main
 
+#import torch
+# map the missing CUDA tensor classes to their CPU twins
+#torch.cuda.LongTensor = torch.LongTensor      # type: ignore
+#torch.cuda.FloatTensor = torch.FloatTensor    # type: ignore
+#torch.cuda.ByteTensor  = torch.ByteTensor     # type: ignore
+#torch.cuda.BoolTensor  = torch.BoolTensor     # type: ignore
+import os, torch
+
+# Pretend CUDA doesn't exist
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
+#torch.cuda.is_available = lambda: False     # short-circuit the test
+
+# Create CPU stand-ins so "from torch.cuda import …" works
+#torch.cuda.LongTensor  = torch.LongTensor
+#torch.cuda.FloatTensor = torch.FloatTensor
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_name", type=str, default="assist2015")

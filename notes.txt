@@ -1,0 +1,135 @@
+
+python generate_wandb.py        --dataset_names assist2009        --model_names   dkt        --project_name  kt_assist2009_dkt  
+
+
+
+wandb sweep all_wandbs/assist2009_dkt_qid_0.yaml
+
+
+
+wandb agent knowledgetracing42-ucla/Knowledge-Component-Reordering-in-knowledge-tracing-examples/67g9n0gg --count 30
+
+
+
+
+## you should run this in   .../examples/model/  directory
+
+python - <<'PY'
+import wandb, pathlib, sys, re, json
+
+BEST = "knowledgetracing42-ucla/kt_assist2009_dkt/25nyq5l0"
+
+run   = wandb.Api().run(BEST)
+cfg   = run.config
+
+base  = pathlib.Path("models/dkt_tiaocan_assist2009")
+if not base.exists():
+    sys.exit(f"  base directory {base} not found")
+
+# build a loose pattern using the 4 numbers that certainly appear
+parts = [
+    str(cfg.get("seed")),
+    f"{cfg.get('dropout')}",             # e.g. 0.05
+    str(cfg.get("emb_size")),            # 64 or 256
+    f"{cfg.get('learning_rate')}",       # 0.0001, 1e-05, …
+]
+regex = re.compile(".*" + ".*".join(re.escape(p) for p in parts) + ".*")
+
+cands = [p for p in base.rglob("*") if p.is_dir() and regex.match(p.name)]
+if not cands:
+    sys.exit("  No matching folder found – check the values printed below:\n" +
+             json.dumps(cfg, indent=2))
+
+folder = max(cands, key=lambda p: p.stat().st_mtime)   # newest if multiple
+print(folder)
+PY
+
+
+
+
+python wandb_predict.py \
+  --save_dir models/dkt_tiaocan_assist2009/assist2009_dkt_qid_models/dkt_tiaocan_assist2009_42_0_0.05_256_0.0001_1_1_52bf8b74-0803-40da-9df4-ea3ce4470921 \
+  --use_wandb 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+python - <<'PY'
+import wandb, pathlib, operator, shutil, sys, os, json
+
+# ── 1. put your sweep-ID here ─────────────────────────────────────────
+SWEEP = "knowledgetracing42-ucla/kt_assist2009_dkt/25nyq5l0 >"
+# ─────────────────────────────────────────────────────────────────────
+
+print("🔎  Fetching best run in", SWEEP)
+best = max(
+    wandb.Api().sweep(SWEEP).runs,
+    key=lambda r: r.summary.get("best_valid_auc", 0)
+)
+
+# where the run wrote its files locally
+base   = pathlib.Path(best.config["save_dir"]).expanduser().resolve()
+subdir = max(
+    base.glob(f"{best.name}*"),           # match the run’s hyper-param string
+    key=lambda p: p.stat().st_mtime      # newest if there were retries
+)
+print("📂  Local checkpoint folder →", subdir)
+
+# copy out everything we need
+dst = pathlib.Path("best_ckpt"); dst.mkdir(exist_ok=True)
+for f in subdir.glob("best*.*"):                 # best_model.ckpt / .pt
+    shutil.copy2(f, dst / f.name)
+shutil.copy2(subdir / "config.json", dst / "config.json")
+print("✅  Copied to", dst)
+PY
+
+
+
+
+
+
+
+
+
+
+
+est_epoch 49
+wandb: model_save_path models/dkt_tiaocan_a...
+wandb:        validacc 0.78452
+wandb:        validauc 0.85375
+wandb: 
+wandb: 🚀 View run twilight-sweep-10 at: https://wandb.ai/knowledgetracing42-ucla/Knowledge-Component-Reordering-in-knowledge-tracing-examples/runs/h27w74ue
+wandb: ⭐️ View project at: https://wandb.ai/knowledgetracing42-ucla/Knowledge-Component-Reordering-in-knowledge-tracing-examples
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20250607_223205-h27w74ue/logs
+wandb: WARNING The legacy backend is deprecated. In future versions, `wandb-core` will become the sole backend service, and the `wandb.require('legacy-service')` flag will be removed. For more information, visit https://wandb.me/wandb-core
+2025-06-07 22:32:57,945 - wandb.wandb_agent - INFO - Cleaning up finished run: h27w74ue
+wandb: Terminating and syncing runs. Press ctrl-c to kill.
+
+
+
+
+
+': 0.7309819020627668, 'oriaccconcepts': 0.7108507723558033, 'oriacclate_mean': 0.7168822289328244, 'oriacclate_vote': 0.7173380434163296, 'oriacclate_all': 0.7142043188422312, 'windowaucconcepts': 0.7270785999149336, 'windowauclate_mean': 0.7327997874662632, 'windowauclate_vote': 0.7305171808166993, 'windowauclate_all': 0.7312808318650013, 'windowaccconcepts': 0.7111593245920196, 'windowacclate_mean': 0.7171389552748378, 'windowacclate_vote': 0.7175372709684762, 'windowacclate_all': 0.7144076476613178}
+
+
+
+
+
+
+
+
+
